@@ -3,17 +3,21 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import time
+import os
 
 # ---------------------------- SET UP WEB DRIVER SETTINGS------------------------------- #
-firefox_web_driver = "/media/kemal/Kemal Data/Python/100DaysOfCode/geckodriver"
-browser = webdriver.Firefox(executable_path=firefox_web_driver)
+browser = webdriver.Firefox(executable_path='/media/kemal/Kemal_Data/Python/100DaysOfCode/geckodriver')
 
 
 # ---------------------------- FUNCTIONS ------------------------------- #
 def log_in_via_fb():
 	log_fb = [inner_element for inner_element in browser.find_elements_by_tag_name("a") if
 	          inner_element.get_attribute("title") == "Facebook"]
-	log_fb[0].click()
+	try:
+		log_fb[0].click()
+	except IndexError:
+		time.sleep(5)
+		cover_letter_each_tab()
 
 
 def cover_letter_each_tab():
@@ -29,19 +33,21 @@ def cover_letter_each_tab():
 	with open("cover_letter.txt") as file:
 		content = file.read()
 		text_area.send_keys(content.replace("company", header))
-		# browser.find_element_by_xpath("/html/body/div[5]/div/div/div[3]/div[1]/div[2]/form/div[2]/button").click()
+
+
+# browser.find_element_by_xpath("/html/body/div[5]/div/div/div[3]/div[1]/div[2]/form/div[2]/button").click()
 
 
 # ---------------------------- ENTERING PROCESS ------------------------------- #
 browser.get("https://rabota.by/")
 log_in = browser.find_element_by_xpath("/html/body/div[5]/div[2]/div/div[1]/div[1]/div/div[4]/a")
 log_in.click()
-time.sleep(3)
+time.sleep(5)
 log_in_via_fb()
 fb_email = browser.find_element_by_id("email")
 fb_password = browser.find_element_by_id("pass")
-fb_email.send_keys("prince_of_love93@mail.ru")
-fb_password.send_keys("Rzvfkbr160393", Keys.ENTER)
+fb_email.send_keys(os.environ.get('FB_LOGIN'))
+fb_password.send_keys(os.environ.get('FB_PASSWORD'), Keys.ENTER)
 time.sleep(10)
 
 # ---------------------------- JOB SEEKING PROCESS ------------------------------- #
@@ -66,6 +72,5 @@ for i in range(1, len(matched_elements)):
 		log_in_via_fb()
 		time.sleep(5)
 		cover_letter_each_tab()
-
 
 # ---------------------------- END OF PROGRAM ------------------------------- #
